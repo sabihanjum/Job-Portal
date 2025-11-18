@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: job_portal_db
+    environment:
+      POSTGRES_DB: job_portal
+      POSTGRES_USER: jobportal_user
+      POSTGRES_PASSWORD: jobportal_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jobportal_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Django Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: job_portal_backend
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    volumes:
+      - ./backend:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=your-secret-key-change-in-production
+      - DATABASE_URL=postgresql://jobportal_user:jobportal_pass@db:5432/job_portal
+      - ALLOWED_HOSTS=localhost,127.0.0.1,backend
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: job_portal_frontend
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+
+networks:
+  default:
+    name: job_portal_network
