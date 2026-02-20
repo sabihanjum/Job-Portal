@@ -15,5 +15,13 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  // Production build configuration
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+  },
+  define: {
+    __API_BASE_URL__: JSON.stringify(process.env.VITE_API_BASE_URL || ''),
   }
 })

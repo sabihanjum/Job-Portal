@@ -60,9 +60,11 @@ export default function AuditLogs() {
                         {log.action}
                       </span>
                     </td>
-                    <td className="px-6 py-4">{log.model} #{log.object_id}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {log.model_name} #{log.object_id}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {JSON.stringify(log.changes).substring(0, 50)}...
+                      {log.ip_address || '-'}
                     </td>
                   </tr>
                 ))

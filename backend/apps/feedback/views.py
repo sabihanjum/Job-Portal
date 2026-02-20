@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from apps.resumes.models import Resume, ResumeCorrection
 from .models import AuditLog
+from .utils import log_audit, get_client_ip
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -51,13 +52,14 @@ def submit_correction(request):
     
     resume.save()
     
-    # Log audit
-    AuditLog.objects.create(
+    # Log audit with IP address
+    log_audit(
         user=request.user,
         action='resume_correction',
         model_name='Resume',
         object_id=resume.id,
-        changes={'corrections': corrections}
+        changes={'corrections': corrections},
+        request=request
     )
     
     return Response({'message': 'Corrections applied successfully'})
@@ -75,9 +77,10 @@ def get_audit_logs(request):
         'id': log.id,
         'user': log.user.username,
         'action': log.action,
-        'model': log.model_name,
+        'model_name': log.model_name,
         'object_id': log.object_id,
         'changes': log.changes,
+        'ip_address': log.ip_address,
         'timestamp': log.timestamp
     } for log in logs]
     

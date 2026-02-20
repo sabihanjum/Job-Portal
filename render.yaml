@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: job-portal-backend
+    env: python
+    plan: starter
+    buildCommand: bash build.sh
+    startCommand: cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: job_portal_db
+          property: connectionString
+      - key: ALLOWED_HOSTS
+        value: yourdomain.onrender.com
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://yourdomain.onrender.com"
+
+  - type: web
+    name: job-portal-frontend
+    staticSite: true
+    buildCommand: cd frontend && npm install && npm run build
+    publishPath: frontend/dist
+    envVars: []
+
+databases:
+  - name: job_portal_db
+    plan: starter
+    region: oregon
+    ipAllowList: []
