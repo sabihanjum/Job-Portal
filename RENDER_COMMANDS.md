@@ -55,7 +55,7 @@ cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
 
 **Environment Variables:**
 ```bash
-PYTHON_VERSION=3.11
+PYTHON_VERSION=3.11.8
 DEBUG=False
 SECRET_KEY=[your-generated-secret-key]
 ALLOWED_HOSTS=job-portal-backend.onrender.com

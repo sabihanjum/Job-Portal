@@ -58,7 +58,7 @@ SECRET_KEY=[YOUR_SECRET_KEY]
 DATABASE_URL=[POSTGRESQL_URL]
 ALLOWED_HOSTS=[yourdomain.onrender.com]
 CORS_ALLOWED_ORIGINS=https://[frontend-domain]
-PYTHON_VERSION=3.11
+PYTHON_VERSION=3.11.8
 ```
 
 **Frontend Service:**

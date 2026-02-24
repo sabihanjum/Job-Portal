@@ -120,8 +120,8 @@ postgresql://job_portal_user:password@dpg-xxxxx-a.oregon-postgres.render.com/job
 Click **Advanced** → **Add Environment Variable** and add these:
 
 ```bash
-# Python version
-PYTHON_VERSION=3.11
+# Python version (must be major.minor.patch format)
+PYTHON_VERSION=3.11.8
 
 # Django settings
 DEBUG=False
@@ -298,6 +298,18 @@ If anything doesn't work:
 ---
 
 ## 🛠️ Common Commands & Troubleshooting
+
+### Fix Hash Mismatch Error
+
+If you see `THESE PACKAGES DO NOT MATCH THE HASHES FROM THE REQUIREMENTS FILE`:
+
+**Solution 1: Clear build cache and redeploy**
+1. Go to backend service in Render Dashboard
+2. Click **Manual Deploy** (top right)
+3. Select **Clear build cache & deploy**
+
+**Solution 2: Update build.sh (already done)**
+The build.sh now includes `--no-cache-dir` flag to avoid cache issues.
 
 ### Re-run Migrations
 

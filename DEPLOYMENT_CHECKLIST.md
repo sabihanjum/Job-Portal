@@ -66,7 +66,7 @@ Add these one by one:
 
 | Variable | Value |
 |----------|-------|
-| `PYTHON_VERSION` | `3.11` |
+| `PYTHON_VERSION` | `3.11.8` |
 | `DEBUG` | `False` |
 | `SECRET_KEY` | [paste from Step 1.1] |
 | `DATABASE_URL` | [paste from Step 2.2] |
@@ -209,12 +209,20 @@ Check:
 
 ## 🔧 Common Issues & Solutions
 
+### Issue: Hash mismatch error during build
+**Error:** `THESE PACKAGES DO NOT MATCH THE HASHES FROM THE REQUIREMENTS FILE`
+
+**Solutions:**
+1. Go to backend service → Manual Deploy (top right)
+2. Click **Clear build cache & deploy**
+3. Wait for fresh build without cached packages
+
 ### Issue: Backend won't deploy
 **Solutions:**
 1. Check build logs for errors
 2. Verify `build.sh` has correct permissions
 3. Ensure `requirements.txt` is valid
-4. Check Python version is 3.11
+4. Check Python version is 3.11.8
 
 ### Issue: CORS errors in frontend
 **Solutions:**

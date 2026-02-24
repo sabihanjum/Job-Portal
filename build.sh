@@ -1,8 +1,11 @@
 #!/bin/bash
 set -o errexit
 
+echo "Upgrading pip..."
+pip install --upgrade pip
+
 echo "Installing backend dependencies..."
-pip install -r backend/requirements.txt
+pip install --no-cache-dir -r backend/requirements.txt
 
 echo "Downloading spaCy model..."
 python -m spacy download en_core_web_sm
