@@ -49,6 +49,38 @@ CREATE USER 'jobportal_user'@'localhost' IDENTIFIED BY 'your_password';
 GRANT ALL PRIVILEGES ON job_portal.* TO 'jobportal_user'@'localhost';
 ```
 
+## Deployment
+
+### 🚀 Deploy to Render (Recommended)
+
+Choose your deployment guide:
+
+1. **[📖 Complete Step-by-Step Guide](DEPLOY_TO_RENDER.md)** - Comprehensive guide with detailed explanations
+2. **[⚡ Quick Command Reference](RENDER_COMMANDS.md)** - All commands in one place for easy copy-paste
+3. **[✅ Interactive Checklist](DEPLOYMENT_CHECKLIST.md)** - Follow along and mark your progress
+
+**Quick Start:**
+```bash
+# 1. Generate secret key
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+
+# 2. Push to GitHub
+git add .
+git commit -m "Deploy to Render"
+git push origin main
+
+# 3. Follow the deployment guide to create services on Render
+```
+
+**Deployment Time:** ~35 minutes for first deployment
+
+**What You'll Get:**
+- Backend API: `https://your-backend.onrender.com`
+- Frontend: `https://your-frontend.onrender.com`
+- PostgreSQL Database (Free tier available)
+- SSL/HTTPS enabled automatically
+- Auto-deploy on git push
+
 ## API Endpoints
 
 ### Authentication
