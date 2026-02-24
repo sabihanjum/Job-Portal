@@ -6,9 +6,6 @@ from apps.resumes.models import Resume
 from apps.jobs.models import Job
 from .models import Match
 from .serializers import MatchSerializer
-from ai_engine.semantic_matcher import SemanticMatcher
-from ai_engine.bias_detector import BiasDetector
-from ai_engine.fraud_detector import FraudDetector
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -31,6 +28,7 @@ def match_resume_to_jobs(request):
     else:
         jobs = Job.objects.filter(id__in=job_ids, is_active=True)
     
+    from ai_engine.semantic_matcher import SemanticMatcher
     matcher = SemanticMatcher()
     results = []
     
@@ -77,6 +75,7 @@ def detect_bias(request):
     if not text:
         return Response({'error': 'text is required'}, status=status.HTTP_400_BAD_REQUEST)
     
+    from ai_engine.bias_detector import BiasDetector
     detector = BiasDetector()
     result = detector.detect_bias(text)
     
@@ -96,6 +95,7 @@ def detect_fraud(request):
     except Resume.DoesNotExist:
         return Response({'error': 'Resume not found'}, status=status.HTTP_404_NOT_FOUND)
     
+    from ai_engine.fraud_detector import FraudDetector
     detector = FraudDetector()
     result = detector.detect_fraud(resume.parsed_data)
     

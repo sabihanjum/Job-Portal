@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Resume
 from .serializers import ResumeSerializer
-from ai_engine.resume_parser import ResumeParser
 
 class ResumeViewSet(viewsets.ModelViewSet):
     serializer_class = ResumeSerializer
@@ -20,6 +19,7 @@ class ResumeViewSet(viewsets.ModelViewSet):
         
         # Parse resume asynchronously (or synchronously for now)
         try:
+            from ai_engine.resume_parser import ResumeParser
             parser = ResumeParser()
             parsed_data = parser.parse_resume(resume.file.path)
             
@@ -38,6 +38,7 @@ class ResumeViewSet(viewsets.ModelViewSet):
         resume = self.get_object()
         
         try:
+            from ai_engine.resume_parser import ResumeParser
             parser = ResumeParser()
             parsed_data = parser.parse_resume(resume.file.path)
             

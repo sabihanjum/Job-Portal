@@ -2,11 +2,10 @@ import re
 import os
 import fitz  # PyMuPDF
 from docx import Document
-import spacy
-
 class ResumeParser:
     def __init__(self):
         try:
+            import spacy
             self.nlp = spacy.load('en_core_web_sm')
         except:
             self.nlp = None

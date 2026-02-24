@@ -1,10 +1,13 @@
-from sentence_transformers import SentenceTransformer, util
-import numpy as np
-
 class SemanticMatcher:
     def __init__(self):
-        # Load pre-trained SBERT model
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        self._model = None
+        self._util = None
+
+    def _ensure_model(self):
+        if self._model is None or self._util is None:
+            from sentence_transformers import SentenceTransformer, util
+            self._model = SentenceTransformer('all-MiniLM-L6-v2')
+            self._util = util
     
     def match_resume_to_job(self, resume_data, job_data):
         """
@@ -15,12 +18,14 @@ class SemanticMatcher:
         resume_text = self._prepare_resume_text(resume_data)
         job_text = self._prepare_job_text(job_data)
         
+        self._ensure_model()
+
         # Compute embeddings
-        resume_embedding = self.model.encode(resume_text, convert_to_tensor=True)
-        job_embedding = self.model.encode(job_text, convert_to_tensor=True)
+        resume_embedding = self._model.encode(resume_text, convert_to_tensor=True)
+        job_embedding = self._model.encode(job_text, convert_to_tensor=True)
         
         # Compute similarity
-        similarity = util.cos_sim(resume_embedding, job_embedding).item()
+        similarity = self._util.cos_sim(resume_embedding, job_embedding).item()
         match_percentage = round(similarity * 100, 2)
         
         # Extract matched and missing skills
@@ -97,14 +102,14 @@ class SemanticMatcher:
         
         # Compute similarity between each resume section and job requirement
         for req in job_requirements[:5]:  # Limit to top 5 requirements
-            req_embedding = self.model.encode(req, convert_to_tensor=True)
+            req_embedding = self._model.encode(req, convert_to_tensor=True)
             
             best_match = None
             best_score = 0
             
             for section in resume_sections:
-                section_embedding = self.model.encode(section['text'], convert_to_tensor=True)
-                score = util.cos_sim(req_embedding, section_embedding).item()
+                section_embedding = self._model.encode(section['text'], convert_to_tensor=True)
+                score = self._util.cos_sim(req_embedding, section_embedding).item()
                 
                 if score > best_score:
                     best_score = score
