@@ -126,13 +126,21 @@ PYTHON_VERSION=3.11.8
 # Django settings
 DEBUG=False
 SECRET_KEY=[paste your generated secret key from Step 1]
-ALLOWED_HOSTS=job-portal-backend.onrender.com
+ALLOWED_HOSTS=job-portal-backend-qk1w.onrender.com,job-portal-frontend-q614.onrender.com
 
 # Database (paste your database URL from Step 4)
 DATABASE_URL=postgresql://job_portal_user:password@dpg-xxxxx-a.oregon-postgres.render.com/job_portal_db
 
 # CORS (we'll update this after frontend deployment)
-CORS_ALLOWED_ORIGINS=https://job-portal-backend.onrender.com
+CORS_ALLOWED_ORIGINS=https://job-portal-backend-qk1w.onrender.com,https://job-portal-frontend-q614.onrender.com
+
+# Superuser auto-create (required on Free plan without Shell)
+DJANGO_SUPERUSER_CREATE=true
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_EMAIL=admin@jobportal.com
+DJANGO_SUPERUSER_PASSWORD=your-strong-password
+# Optional: reset password on each deploy
+# DJANGO_SUPERUSER_FORCE_PASSWORD=true
 ```
 
 **Important**: Replace `[paste your generated secret key from Step 1]` with actual secret key!
@@ -147,31 +155,16 @@ CORS_ALLOWED_ORIGINS=https://job-portal-backend.onrender.com
 
 ### Step 8: Initialize Database (Important!)
 
-Once backend is deployed, you need to create an admin user:
+On the Free plan, Render does not provide Shell access. Use the auto-create
+superuser env vars above and redeploy. The build will create the admin user
+automatically if it does not exist.
 
-**Via Render Shell:**
-1. Go to your backend service in Render Dashboard
-2. Click **Shell** tab (top right)
-3. Run these commands:
+If you upgrade to Starter (Shell access available), you can still create a user
+manually:
 
 ```bash
-# Navigate to backend
 cd backend
-
-# Create superuser
 python manage.py createsuperuser
-
-# Follow prompts:
-# Username: admin
-# Email: your-email@example.com
-# Password: [choose a strong password]
-# Password (again): [repeat password]
-```
-
-**Alternative: Run create_superuser.py script:**
-```bash
-cd backend
-python ../create_superuser.py
 ```
 
 ---
@@ -187,7 +180,7 @@ Before deploying frontend, update the API URL:
 ```javascript
 const API_BASE_URL = 
   process.env.NODE_ENV === 'production' 
-    ? 'https://job-portal-backend.onrender.com/api'  // ← Your backend URL
+    ? 'https://job-portal-backend-qk1w.onrender.com/api'  // ← Your backend URL
     : 'http://localhost:8000/api';
 ```
 
@@ -241,7 +234,7 @@ git push origin main
    ```
 5. Also update `ALLOWED_HOSTS`:
    ```
-   job-portal-backend.onrender.com,job-portal-frontend.onrender.com
+   job-portal-backend-qk1w.onrender.com,job-portal-frontend-q614.onrender.com
    ```
 6. Click **Save Changes**
 7. This will trigger automatic redeployment (2-3 minutes)

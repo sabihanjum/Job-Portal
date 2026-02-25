@@ -6,6 +6,9 @@ const API_BASE_URL =
     ? 'https://job-portal-backend-qk1w.onrender.com/api'  // ← Production backend URL
     : 'http://localhost:8000/api'
 
+// Debug: log the API URL being used
+console.log('API_BASE_URL:', API_BASE_URL, 'NODE_ENV:', process.env.NODE_ENV)
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
