@@ -1,22 +1,13 @@
 import axios from 'axios'
 
 // Determine API base URL based on environment
-const getApiBaseUrl = () => {
-  // If running in production on Render
-  if (import.meta.env.PROD) {
-    // Use VITE_API_BASE_URL environment variable if available
-    if (import.meta.env.VITE_API_BASE_URL) {
-      return import.meta.env.VITE_API_BASE_URL
-    }
-    // Fallback to relative path (works if frontend served from backend)
-    return '/api'
-  }
-  // Development: use relative path (proxied by Vite)
-  return '/api'
-}
+const API_BASE_URL = 
+  process.env.NODE_ENV === 'production' 
+    ? 'https://job-portal-backend-qk1w.onrender.com/api'  // ← Production backend URL
+    : 'http://localhost:8000/api'
 
 const api = axios.create({
-  baseURL: getApiBaseUrl(),
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
