@@ -27,4 +27,18 @@ cd backend
 python manage.py migrate
 cd ..
 
+echo "Creating superuser (if configured)..."
+cd backend
+python create_superuser_from_env.py
+cd ..
+
+echo "Creating sample jobs (if env var enabled)..."
+if [ "$CREATE_SAMPLE_DATA" = "true" ]; then
+  cd backend
+  python create_sample_jobs.py
+  cd ..
+else
+  echo "Skipping sample data creation (set CREATE_SAMPLE_DATA=true to enable)"
+fi
+
 echo "Build completed successfully!"
