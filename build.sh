@@ -29,13 +29,13 @@ cd ..
 
 echo "Creating superuser (if configured)..."
 cd backend
-python create_superuser_from_env.py
+python -c "import sys; sys.path.insert(0, '.'); exec(open('create_superuser_from_env.py').read())" || python create_superuser_from_env.py || echo "Warning: superuser creation failed"
 cd ..
 
 echo "Creating sample jobs (if env var enabled)..."
 if [ "$CREATE_SAMPLE_DATA" = "true" ]; then
   cd backend
-  python create_sample_jobs.py
+  python -c "import sys; sys.path.insert(0, '.'); exec(open('create_sample_jobs.py').read())" || python create_sample_jobs.py || echo "Warning: sample jobs creation failed"
   cd ..
 else
   echo "Skipping sample data creation (set CREATE_SAMPLE_DATA=true to enable)"
