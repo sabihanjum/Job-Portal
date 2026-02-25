@@ -116,7 +116,7 @@ SIMPLE_JWT = {
 }
 
 # CORS
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000').split(',')
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000,https://job-portal-frontend-q614.onrender.com,https://job-portal-backend-qk1w.onrender.com').split(',')
 
 # Custom User Model
 AUTH_USER_MODEL = 'authentication.User'
