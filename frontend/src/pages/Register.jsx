@@ -33,7 +33,16 @@ export default function Register() {
       toast.success('Registration successful!')
       navigate('/')
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Registration failed')
+      console.error('Registration error:', error.response?.data || error.message)
+      // Handle different error formats from backend
+      const errorData = error.response?.data
+      if (typeof errorData === 'object' && !Array.isArray(errorData)) {
+        // Multiple field errors
+        const firstError = Object.values(errorData).flat()[0]
+        toast.error(firstError || 'Registration failed')
+      } else {
+        toast.error(errorData?.error || errorData?.detail || 'Registration failed')
+      }
     } finally {
       setLoading(false)
     }

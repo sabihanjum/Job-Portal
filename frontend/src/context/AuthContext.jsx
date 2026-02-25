@@ -33,14 +33,19 @@ export function AuthProvider({ children }) {
   }
 
   const register = async (data) => {
-    const response = await authAPI.register(data)
-    const { user, tokens } = response.data
-    
-    localStorage.setItem('access_token', tokens.access)
-    localStorage.setItem('user', JSON.stringify(user))
-    setUser(user)
-    
-    return user
+    try {
+      const response = await authAPI.register(data)
+      const { user, tokens } = response.data
+      
+      localStorage.setItem('access_token', tokens.access)
+      localStorage.setItem('user', JSON.stringify(user))
+      setUser(user)
+      
+      return user
+    } catch (error) {
+      console.error('Register error response:', error.response?.status, error.response?.data)
+      throw error
+    }
   }
 
   const logout = () => {
