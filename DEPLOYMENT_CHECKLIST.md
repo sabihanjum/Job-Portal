@@ -72,6 +72,10 @@ Add these one by one:
 | `DATABASE_URL` | [paste from Step 2.2] |
 | `ALLOWED_HOSTS` | `job-portal-backend.onrender.com` |
 | `CORS_ALLOWED_ORIGINS` | `https://job-portal-backend.onrender.com` |
+| `DJANGO_SUPERUSER_CREATE` | `true` |
+| `DJANGO_SUPERUSER_USERNAME` | `admin` |
+| `DJANGO_SUPERUSER_EMAIL` | `admin@jobportal.com` |
+| `DJANGO_SUPERUSER_PASSWORD` | `[your-strong-password]` |
 
 ### [ ] Step 3.3: Deploy Backend
 - Click: **Create Web Service**
@@ -82,15 +86,8 @@ Add these one by one:
 **Backend URL:** `https://_______________________________.onrender.com`
 
 ### [ ] Step 3.5: Create Superuser
-- Go to: Backend Service → **Shell** tab
-- Run:
-```bash
-cd backend
-python manage.py createsuperuser
-```
-- Username: `admin`
-- Email: `your-email@example.com`
-- Password: `_______________` (save this!)
+- Free plan (no Shell): set the `DJANGO_SUPERUSER_*` env vars above and redeploy
+- Starter plan: you can also use the Shell tab to run `python manage.py createsuperuser`
 
 ---
 

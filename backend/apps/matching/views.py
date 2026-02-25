@@ -28,43 +28,73 @@ def match_resume_to_jobs(request):
     else:
         jobs = Job.objects.filter(id__in=job_ids, is_active=True)
     
-    from ai_engine.semantic_matcher import SemanticMatcher
-    matcher = SemanticMatcher()
     results = []
     
-    for job in jobs:
-        # Check if match already exists
-        existing_match = Match.objects.filter(resume=resume, job=job).first()
+    try:
+        from ai_engine.semantic_matcher import SemanticMatcher
+        matcher = SemanticMatcher()
         
-        if existing_match:
-            results.append(MatchSerializer(existing_match).data)
-            continue
+        for job in jobs:
+            try:
+                # Check if match already exists
+                existing_match = Match.objects.filter(resume=resume, job=job).first()
+                
+                if existing_match:
+                    results.append(MatchSerializer(existing_match).data)
+                    continue
+                
+                # Perform matching with error handling
+                match_result = matcher.match_resume_to_job(
+                    resume.parsed_data,
+                    {
+                        'title': job.title,
+                        'description': job.description,
+                        'requirements': job.requirements,
+                        'required_skills': job.required_skills
+                    }
+                )
+                
+                # Save match
+                match = Match.objects.create(
+                    resume=resume,
+                    job=job,
+                    match_percentage=match_result['match_percentage'],
+                    matched_skills=match_result['matched_skills'],
+                    missing_skills=match_result['missing_skills'],
+                    heatmap=match_result['heatmap'],
+                    recommendation=match_result['recommendation']
+                )
+                
+                results.append(MatchSerializer(match).data)
+                
+            except MemoryError:
+                # Skip job if OOM - don't crash worker
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(f'MemoryError while matching job {job.id}')
+                continue
+            except Exception as e:
+                # Log other errors but continue processing
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f'Error matching job {job.id}: {str(e)}')
+                continue
         
-        # Perform matching
-        match_result = matcher.match_resume_to_job(
-            resume.parsed_data,
-            {
-                'title': job.title,
-                'description': job.description,
-                'requirements': job.requirements,
-                'required_skills': job.required_skills
-            }
-        )
-        
-        # Save match
-        match = Match.objects.create(
-            resume=resume,
-            job=job,
-            match_percentage=match_result['match_percentage'],
-            matched_skills=match_result['matched_skills'],
-            missing_skills=match_result['missing_skills'],
-            heatmap=match_result['heatmap'],
-            recommendation=match_result['recommendation']
-        )
-        
-        results.append(MatchSerializer(match).data)
+        return Response({'matches': results})
     
-    return Response({'matches': results})
+    except MemoryError:
+        return Response(
+            {'error': 'Server memory limit reached. Try matching fewer jobs at once.'},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE
+        )
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f'Error in match_resume_to_jobs: {str(e)}')
+        return Response(
+            {'error': 'Error matching resume to jobs'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -75,11 +105,24 @@ def detect_bias(request):
     if not text:
         return Response({'error': 'text is required'}, status=status.HTTP_400_BAD_REQUEST)
     
-    from ai_engine.bias_detector import BiasDetector
-    detector = BiasDetector()
-    result = detector.detect_bias(text)
-    
-    return Response(result)
+    try:
+        from ai_engine.bias_detector import BiasDetector
+        detector = BiasDetector()
+        result = detector.detect_bias(text)
+        return Response(result)
+    except MemoryError:
+        return Response(
+            {'error': 'Server memory limit reached. Try again later.'},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE
+        )
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f'Error in detect_bias: {str(e)}')
+        return Response(
+            {'error': 'Error detecting bias'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -95,11 +138,24 @@ def detect_fraud(request):
     except Resume.DoesNotExist:
         return Response({'error': 'Resume not found'}, status=status.HTTP_404_NOT_FOUND)
     
-    from ai_engine.fraud_detector import FraudDetector
-    detector = FraudDetector()
-    result = detector.detect_fraud(resume.parsed_data)
-    
-    return Response(result)
+    try:
+        from ai_engine.fraud_detector import FraudDetector
+        detector = FraudDetector()
+        result = detector.detect_fraud(resume.parsed_data)
+        return Response(result)
+    except MemoryError:
+        return Response(
+            {'error': 'Server memory limit reached. Try again later.'},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE
+        )
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f'Error in detect_fraud: {str(e)}')
+        return Response(
+            {'error': 'Error detecting fraud'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

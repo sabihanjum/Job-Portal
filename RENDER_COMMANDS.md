@@ -61,6 +61,10 @@ SECRET_KEY=[your-generated-secret-key]
 ALLOWED_HOSTS=job-portal-backend.onrender.com
 DATABASE_URL=[your-postgresql-connection-string]
 CORS_ALLOWED_ORIGINS=https://job-portal-backend.onrender.com
+DJANGO_SUPERUSER_CREATE=true
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_EMAIL=admin@jobportal.com
+DJANGO_SUPERUSER_PASSWORD=[your-strong-password]
 ```
 
 ### Frontend Static Site Settings
@@ -85,6 +89,15 @@ Access via: Render Dashboard → Your Service → Shell Tab
 ```bash
 cd backend
 python manage.py createsuperuser
+```
+
+### Create Superuser Without Shell (Free plan)
+```bash
+# Set env vars in Render Dashboard, then redeploy
+DJANGO_SUPERUSER_CREATE=true
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_EMAIL=admin@jobportal.com
+DJANGO_SUPERUSER_PASSWORD=[your-strong-password]
 ```
 
 ### Run Migrations
